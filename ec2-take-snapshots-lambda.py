@@ -81,15 +81,21 @@ def main(event, context):
     snap_count = 0
 
     if VOLUMES and not VOLUME_TAGS:
-        for volume_id in VOLUMES:
-            volume = ec2.Volume(volume_id)
-            try:
-                volume.describe_status()
-            except ClientError:
-                print("No volumes found with the ID {}".format(volume_id))
-            else:
+        if len(VOLUMES) == VOLUMES.count("all"):
+            all_volumes = ec2.volumes.all()
+            for volume in all_volumes:
                 take_snapshots(volume, tags_kwargs)
                 snap_count += 1
+        else:
+            for volume_id in VOLUMES:
+                volume = ec2.Volume(volume_id)
+                try:
+                    volume.describe_status()
+                except ClientError:
+                    print("No volumes found with the ID {}".format(volume_id))
+                else:
+                    take_snapshots(volume, tags_kwargs)
+                    snap_count += 1
         print_summary(snap_count)
     elif VOLUME_TAGS and not VOLUMES:
         tag_volumes = get_tag_volumes(ec2)
