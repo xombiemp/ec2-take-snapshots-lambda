@@ -42,6 +42,7 @@ def process_tags(volume):
         for tag in volume.tags:
             if tag["Key"] == "Name":
                 SNAPSHOT_TAGS["Name"] = tag["Value"]
+                break
     if SNAPSHOT_TAGS:
         if len(SNAPSHOT_TAGS) <= 10:
             for key, value in SNAPSHOT_TAGS.items():
